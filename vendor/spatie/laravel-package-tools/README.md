@@ -2,7 +2,7 @@
     <a href="https://spatie.be/open-source?utm_source=github&utm_medium=banner&utm_campaign=laravel-package-tools">
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://spatie.be/packages/header/laravel-package-tools/html/dark.webp">
-        <img alt="Logo for laravel-package-tools" src=" https://spatie.be/packages/header/laravel-package-tools/html/light.webp" height="190">
+        <img alt="Logo for laravel-package-tools" src="https://spatie.be/packages/header/laravel-package-tools/html/light.webp">
       </picture>
     </a>
 
@@ -112,7 +112,7 @@ and to get started easily you should consider using this to start your package.
 The structure for a package expected by default looks like this:
 
 ```
-<root
+<root>
 <package root>/src/                       Default location for PackageServiceProvider extended class
 <package root>/src/Commands/              Commands (callable and console-only)
 <package root>/src/Components/            Blade components
