@@ -22,7 +22,8 @@ class EcpayController extends Controller
 
     /**
      * user_id 用戶ID
-     * plan 方案一 需帶入point點數
+     * plan   方案 1|2|3
+     * point  方案一 需帶入point點數
      * period 方案二、三 帶入訂閱 月或年 參數 M/Y
      * memo 備註
      * @param Request $request
