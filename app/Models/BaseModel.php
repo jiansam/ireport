@@ -10,7 +10,7 @@ class BaseModel extends Model
 {
     use HasDateTimeFormatter;
     use UID;
-
+    protected $guarded = [];
     protected $keyType = 'string';
 }
 
