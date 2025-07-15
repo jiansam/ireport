@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'Dcat Admin',
+    'name' => 'IReport',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,8 +22,8 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<img src="/vendor/dcat-admin/images/logo.png" width="35"> &nbsp;Dcat Admin',
-
+    # 'logo' => '<img src="/vendor/dcat-admin/images/logo.png" width="35"> &nbsp; IReport',
+    'logo' => '<img src="' . env('APP_URL') . '/vendor/dcat-admin/images/logo.png" width="35"> &nbsp; IReport',
     /*
     |--------------------------------------------------------------------------
     | dcat-admin mini logo
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<img src="/vendor/dcat-admin/images/logo.png">',
+    'logo-mini' => '<img src="' . env('APP_URL') . '/vendor/dcat-admin/images/logo.png">',
 
     /*
     |--------------------------------------------------------------------------
