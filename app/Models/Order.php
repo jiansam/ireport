@@ -8,25 +8,33 @@ use App\Models\BaseModel;
 class Order extends BaseModel
 {
     use HasFactory;
-    /**付款狀態*/
-    public const STATUS_PAY = 1; //付款
-    public const STATUS_NOT_PAY = 2; //未付款
-    public const STATUS_AUTHORIZE = 3; //授權
-    public const STATUS_NOT_AUTHORIZE = 4;//尚未授權
-    public const STATUS_EXPIRED  = 5;//逾期
-    public const STATUS_FAIL = 6;//付款失敗
-
+    /**付款狀態
+     * 1. 付款
+     * 2. 未付款
+     * 3. 授權
+     * 4. 尚未授權
+     * 5. 逾期
+     * 6. 付款失敗
+    */
+    public const STATUS_PAY = 1;
+    public const STATUS_NOT_PAY = 2;
+    public const STATUS_AUTHORIZE = 3; 
+    public const STATUS_NOT_AUTHORIZE = 4;
+    public const STATUS_EXPIRED  = 5;
+    public const STATUS_FAIL = 6;
     /**
-     * 付款方式 1綠界 2Paypal
+     * 付款方式 
+     * 1 綠界 
+     * 2 Paypal
      * @var integer
      */
     public const PAY_TYPE_GREEN = 1;
     public const PAY_TYPE_PAYPAL = 2;
 
     /**
-    1.	單次方案
-    2.	基礎方案
-    3.	高用量
+    * 1.單次方案
+    * 2.基礎方案
+    * 3.高用量
     */
     public const PLAN_POINT = 1;
     public const PLAN_NORMAL = 2;
