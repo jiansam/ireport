@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('id', 45)->primary()->comment('會員編號');
             
             $table->string('name', 50)->comment('姓名');
-            $table->string('phone_number', 10)->comment('電話(手機)');
+            $table->string('phone', 10)->comment('電話(手機)');
             $table->string('email', 255)->unique()->comment('電子信箱');
             $table->string('address', 255)->comment('地址');
             
