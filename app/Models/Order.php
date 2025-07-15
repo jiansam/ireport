@@ -8,24 +8,14 @@ use App\Models\BaseModel;
 class Order extends BaseModel
 {
     use HasFactory;
-    protected $fillable = [
-        'member_id',
-        'status',
-        'price',
-        'name',
-        'phone',
-        'email',
-        'address',
-        'pay_type',
-        'point',
-        'plan',
-        'invoice_id',
-        'memo',
-    ];
-    protected static function boot()
-    {
-        parent::boot();
-    }
+
+    public const STATUS_PAY = 1; //付款
+    public const STATUS_NOT_PAY = 2; //未付款
+    public const STATUS_AUTHORIZE = 3; //授權
+    public const STATUS_NOT_AUTHORIZE = 4;//尚未授權
+    public const STATUS_EXPIRED  = 5;//逾期
+    public const STATUS_FAIL = 6;//付款失敗
+
 
     public function member()
     {
