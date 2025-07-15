@@ -15,5 +15,5 @@ Route::group([
     $router->get('/', 'HomeController@index');
 
     $router->resource('members', 'MemberController');
-
+    $router->resource('orders', 'OrderController');
 });
