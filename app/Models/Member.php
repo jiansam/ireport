@@ -18,14 +18,6 @@ class Member extends BaseModel
     public const STATUS_PAYMENT_FAILED = '付款失敗';
 
     /**
-     * 付款方式
-     * 1. 綠界
-     * 2. Paypal
-     */
-    public const PAY_TYPE_ECPAY = 1;
-    public const PAY_TYPE_PAYPAL = 2;
-
-    /**
      * 方案
      * 1. 單次
      * 2. 基礎
