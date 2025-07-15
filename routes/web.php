@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EcpayController;
 use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +20,13 @@ Route::get('/react', function () {
     return view('react');
 });
 
+/**綠界金流送單*/
+Route::get('ecpay', [EcpayController::class, "ecpay"]);
 
+/**綠界金流Callback*/
+Route::post('ecpay/callback', [EcpayController::class, "ecpayCallback"]);
 
 
 /**test*/
 Route::get('test/ecpay', [TestController::class, "ecpay"]);
-Route::get('test/ecpay/callback', [TestController::class, "ecpayCallback"]);
+Route::post('test/ecpay/callback', [TestController::class, "ecpayCallback"]);
