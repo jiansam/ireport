@@ -18,14 +18,14 @@ class Order extends BaseModel
     */
     public const STATUS_PAY = 1;
     public const STATUS_NOT_PAY = 2;
-    public const STATUS_AUTHORIZE = 3; 
+    public const STATUS_AUTHORIZE = 3;
     public const STATUS_NOT_AUTHORIZE = 4;
     public const STATUS_EXPIRED  = 5;
     public const STATUS_FAIL = 6;
-    
+
     /**
-     * 付款方式 
-     * 1 綠界 
+     * 付款方式
+     * 1 綠界
      * 2 Paypal
      * @var integer
      */
@@ -46,8 +46,10 @@ class Order extends BaseModel
      */
     public const PLAN_NORMAL_PRICE_1=495;
     public const PLAN_NORMAL_PRICE_2=999;
-    public const PLAN_NORMAL_HIGHT_1=750;
-    public const PLAN_NORMAL_HIGHT_2=1500;
+    public const PLAN_NORMAL_PRICE_3=9900;
+    public const PLAN_HIGHT_PRICE_1=750;
+    public const PLAN_HIGHT_PRICE_2=1500;
+    public const PLAN_HIGHT_PRICE_3=15000;
 
     public function member()
     {
