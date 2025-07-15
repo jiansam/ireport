@@ -10,32 +10,34 @@ class Member extends BaseModel
 {
     use HasFactory;
 
-    protected $primaryKey = 'id';
+    // 付款狀態
+    public const STATUS_PAID = '已付款';
+    public const STATUS_AUTHORIZED = '已授權';
+    public const STATUS_AUTH_FAILED = '授權失敗';
+    public const STATUS_OVERDUE = '逾期未付';
+    public const STATUS_PAYMENT_FAILED = '付款失敗';
 
-    protected $fillable = [
-        'name',
-        'phone_number',
-        'email',
-        'address',
-        'carrier_num',
-        'tax_id',
-        'account',
-        'password',
-        'google_id',
-        'status',
-        'point',
-        'login_time',
-        'start_time',
-        'end_time',
-    ];
+    /**
+     * 付款方式
+     * 1. 綠界
+     * 2. Paypal
+     */
+    public const PAY_TYPE_ECPAY = 1;
+    public const PAY_TYPE_PAYPAL = 2;
+
+    /**
+     * 方案
+     * 1. 單次
+     * 2. 基礎
+     * 3. 高用量
+     */
+    public const PLAN_SINGLE = 1;
+    public const PLAN_BASIC = 2;
+    public const PLAN_HIGH = 3;
 
     protected $hidden = [
         'password',
     ];
-    protected static function boot()
-    {
-        parent::boot();
-    }
 
     public function orders()
     {

@@ -22,6 +22,7 @@ class Order extends BaseModel
     public const STATUS_NOT_AUTHORIZE = 4;
     public const STATUS_EXPIRED  = 5;
     public const STATUS_FAIL = 6;
+    
     /**
      * 付款方式 
      * 1 綠界 
