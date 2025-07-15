@@ -26,6 +26,9 @@ class EcpayController extends Controller
      * point  方案一 需帶入point點數
      * period 方案二、三 帶入訂閱 月或年 參數 M/Y
      * memo 備註
+     *
+     * 單次訂閱範例 {user_id:1234, plan:1,point:10,memo:'test'}
+     * 月訂閱範例  {user_id:1234, plan:2,period:'Y',memo:'test'}
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|array
      */
