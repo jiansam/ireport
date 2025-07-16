@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use TsaiYiHua\ECPay\Checkout;
 use TsaiYiHua\ECPay\Invoice;
 use TsaiYiHua\ECPay\Constants\ECPayDonation;
@@ -21,39 +23,50 @@ class EcpayController extends Controller
     }
 
     /**
-     * user_id 用戶ID
-     * plan   方案 1|2|3
-     * point  方案一 需帶入point點數
-     * period 方案二、三 帶入訂閱 月或年 參數 M/Y
-     * memo 備註
+     * @desc
+     * 綠界金流信用卡訂閱
      *
-     * 單次訂閱範例 {user_id:1234, plan:1,point:10,memo:'test'}
-     * 月訂閱範例  {user_id:1234, plan:2,period:'Y',memo:'test'}
+     * @method POST
      * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|array
+     * @param member_id 用戶ID
+     * @param plan   方案 1|2|3
+     * @param point  方案一 需帶入point點數
+     * @param period 方案二、三 帶入訂閱 月或年 參數 M/Y
+     * @param memo 備註
+     *
+     * @example
+     *  1.一次性訂閱
+     *  http://127.0.0.1/ireport/ecpay?member_id=79414369368760e7e1c086&plan=1&point=10&memo=test
+     *  2.月訂閱
+     *  http://127.0.0.1/ireport/ecpay?member_id=79414369368760e7e1c086&period=M&memo=test
      */
     public function ecpay(Request $request)
     {
-
-        $member = Member::find($request->user_id);
+        $member = Member::find($request->member_id);
 
         if ($member == null) {
-            abort(500 , "Error member not found!");
+            abort(403 , "錯誤，找不到會員帳號。");
+        }
+
+        if (!$request->plan){
+            abort(403 , "參數錯誤，Plan為必需值");
+        }else if ($request->plan == 1 && !point) {
+            abort(403 , "參數錯誤，Plan一次性付款，需帶入point");
+        } else if (($request->plan == 2 || $request->plan =3)  && !period) {
+            abort(403 , "參數錯誤，Plan訂閱制，需帶入period");
         }
 
         $order = new Order();
-        $order->user_id = $request->user_id;
+        $order->member_id = $request->member_id;
         $order->name =  $member->name;
         $order->phone = $member->phone;
         $order->email = $member->email;
-        $order->addr = $member->addr;
-        $order->pay_type = Order::PAY_TYPE_GREEN;
+        $order->address = $member->address;
+
         $order->plan  = $request->plan;
         $order->memo = $request->memo;
         $order->period = $request ->period;
         $order->point =  0;
-
-
 
         $callback = url("ecpay/callback");
         $itemDescription ="";
@@ -61,7 +74,7 @@ class EcpayController extends Controller
 
         //找尋是否有首購
         $orderFirstFn = function() use($request) {
-           return  Order::where("user_id" ,$request->user_id)
+            return  Order::where("member_id" ,$request->member_id)
             ->whereIn("plan", [Order::PLAN_NORMAL , Order::PLAN_HIGHT])
             ->where("status" , Order::STATUS_AUTHORIZE)->count();
         };
@@ -70,6 +83,7 @@ class EcpayController extends Controller
             case Order::PLAN_POINT :
                 $itemName ="單次方案";
                 $itemDescription ="Pay-per-report (單次方案)";
+                $order->pay_type = Order::PAY_TYPE_ONE_GREEN;
                 $order->status = Order::STATUS_NOT_PAY;
                 $order->point =  $request->point;
                 $order->price = $request->point * 10;
@@ -77,6 +91,7 @@ class EcpayController extends Controller
             case Order::PLAN_NORMAL :
                 $itemName ="基礎方案";
                 $itemDescription ="基礎方案 訂閱費";
+                $order->pay_type = Order::PAY_TYPE_PERIOD_GREEN;
                 $order->status = Order::STATUS_NOT_AUTHORIZE;
 
                 if ($order->period  =="M") {//月訂閱 首購優惠
@@ -89,6 +104,7 @@ class EcpayController extends Controller
             case Order::PLAN_HIGHT:
                 $itemName ="高用量方案";
                 $itemDescription ="高用量方案 訂閱費";
+                $order->pay_type = Order::PAY_TYPE_PERIOD_GREEN;
                 $order->status = Order::STATUS_NOT_AUTHORIZE;
 
                 if ($order->period  =="M") {
@@ -98,53 +114,113 @@ class EcpayController extends Controller
                 }
                 break;
             default:
-                abort(500 ,"Error plan type {$request->plan}.");
+                abort(403 ,"錯誤方案類別($request->plan)");
         }
 
         $order->save();
 
         $formData = [
-            'UserId' => $request->user_id, // 用戶ID , Optional
+            'UserId' => $request->member_id, // 用戶ID , Optional
             'ItemDescription' =>$itemDescription,
             'ItemName' => $itemName,
             'TotalAmount' =>  $order->price,
             'PaymentMethod' => 'Credit', // ALL, Credit, ATM, WebATM
-            "CustomField1"=>"", $order->id
+            "CustomField1"=> $order->id,
         ];
-
-
+        Log::info("save order:" ,$order);
+        Log::info("ECPay send order:" ,$formData);
         return $this->checkout->setReturnUrl($callback)->setPostData($formData)->send();
     }
 
-    public function ecpayCallback(Request $request){
-        /**
-         * array:17 [▼ /
-         "CustomField1" => null
-         "CustomField2" => null
-         "CustomField3" => null
-         "CustomField4" => null
-         "MerchantID" => "3002607"
-         "MerchantTradeNo" => "O175254249240136158"
-         "PaymentDate" => "2025/07/15 09:26:29"
-         "PaymentType" => "Credit_CreditCard"
-         "PaymentTypeChargeFee" => "2"
-         "RtnCode" => "1"
-         "RtnMsg" => "Succeeded"
-         "SimulatePaid" => "0"
-         "StoreID" => null
-         "TradeAmt" => "10"
-         "TradeDate" => "2025/07/15 09:21:32"
-         "TradeNo" => "2507150921330121"
-         "CheckMacValue" => "205AC832F1F59CCC56523F98EFED50FBC100A84A1CBE6D8BC062C9CDA7F039B3"
-         ]
-         */
-        $post = $request->post();
-        if ($post["RtnCode"] == "1") { //成功
-            $id = $post["CustomField1"];
-        } else { //失敗
 
+    /**
+     *綠界回clll
+     *
+     *會傳參數
+     * array:17 [▼ /
+     "CustomField1" => null
+     "CustomField2" => null
+     "CustomField3" => null
+     "CustomField4" => null
+     "MerchantID" => "3002607"
+     "MerchantTradeNo" => "O175254249240136158"
+     "PaymentDate" => "2025/07/15 09:26:29"
+     "PaymentType" => "Credit_CreditCard"
+     "PaymentTypeChargeFee" => "2"
+     "RtnCode" => "1"
+     "RtnMsg" => "Succeeded"
+     "SimulatePaid" => "0"
+     "StoreID" => null
+     "TradeAmt" => "10"
+     "TradeDate" => "2025/07/15 09:21:32"
+     "TradeNo" => "2507150921330121"
+     "CheckMacValue" => "205AC832F1F59CCC56523F98EFED50FBC100A84A1CBE6D8BC062C9CDA7F039B3"
+     ]
+     */
+    public function ecpayCallback(Request $request){
+        $post = $request->post();
+        Log::info('ECPay callback:', $post);
+
+
+        if (!isset($post["RtnCode"])) {
+            Log::error('ECPay callback missing RtnCode');
+            return;
         }
-        //dd($request , $post);
+
+        if ($post["RtnCode"] == "1") { //成功
+            $orderId = $post["CustomField1"];
+
+            $order = Order::find($orderId);
+            $member = $order->member;
+
+            $member->order_id = $order->id; //綁定現行訂單
+
+            $order->trade_no = $post["TradeNo"];
+            $order->pay_date =  $post['PaymentDate'];
+            switch ($order->plan) {
+                case Order::PLAN_POINT :
+                    $order->status = Order::STATUS_PAY;
+                    $member->status = Member::STATUS_PAY;
+                    $member->start_time =null;
+                    $member->end_time =null;
+                    $member->point += $order->point;
+                    break;
+                case Order::PLAN_NORMAL :
+                case Order::PLAN_HIGHT:
+                    $order->status = Order::STATUS_AUTHORIZE;
+                    if ($order->period  =="M") {
+                        $order->status = Order::STATUS_AUTHORIZE;
+                        $member->status = Member::STATUS_MONTH;
+                        $member->start_time =  date('Y-m-d');
+                        $member->end_time = date('Y-m-d', strtotime( $member->start_time . ' +1 month +2 day'));
+                    } else {
+                        $order->status = Order::STATUS_AUTHORIZE;
+                        $member->status = Member::STATUS_YEAR;
+                        $member->start_time = date('Y-m-d');
+                        $member->end_time =date('Y-m-d', strtotime( $member->start_time . ' +1 year +2 day'));
+                    }
+                    break;
+            }
+
+            DB::transaction(function () use ($order, $member) {
+                $order->save();
+                $member->save();
+            });
+
+            Log::info("ECPay callback done TradeNo:$order->trade_no");
+        } else {
+            // 付款失敗處理
+            $orderId = $post["CustomField1"] ?? null;
+
+            if ($orderId) {
+                $order = Order::find($orderId);
+                if ($order) {
+                    $order->status = Order::STATUS_FAIL;
+                    $order->save();
+                    Log::warning("ECPay callback：付款失敗訂單 ID: $orderId");
+                }
+            }
+        }
     }
 
     /*

@@ -29,8 +29,10 @@ class Order extends BaseModel
      * 2 Paypal
      * @var integer
      */
-    public const PAY_TYPE_GREEN = 1;
-    public const PAY_TYPE_PAYPAL = 2;
+    public const PAY_TYPE_ONE_GREEN = 1;
+    public const PAY_TYPE_PERIOD_GREEN = 2;
+    public const PAY_TYPE_ONE_PAYPAL = 3;
+    public const PAY_TYPE_PERIOD_PAYPAL = 4;
 
     /**
     * 1.單次方案

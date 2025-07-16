@@ -10,27 +10,39 @@ class Member extends BaseModel
 {
     use HasFactory;
 
-    // 付款狀態
-    public const STATUS_PAID = '已付款';
-    public const STATUS_AUTHORIZED = '已授權';
-    public const STATUS_AUTH_FAILED = '授權失敗';
-    public const STATUS_OVERDUE = '逾期未付';
-    public const STATUS_PAYMENT_FAILED = '付款失敗';
+
 
     /**
-     * 方案
-     * 1. 單次
-     * 2. 基礎
-     * 3. 高用量
+     * 1.一般免費
+     * 2.試用期
+       3.年訂閱、
+       4.月訂閱
+       5.已購買
+     * @var integer
      */
-    public const PLAN_SINGLE = 1;
-    public const PLAN_BASIC = 2;
-    public const PLAN_HIGH = 3;
+    public const STATUS_FREE = 1;
+    public const STATUS_TEST = 2;
+    public const STATUS_YEAR = 3;
+    public const STATUS_MONTH = 4;
+    public const STATUS_PAY = 5;
 
     protected $hidden = [
         'password',
     ];
 
+    /**
+     *現行綁定訂單有訂閱或購買才有
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function order()
+    {
+        return $this->hasOne(Order::class, 'order_id', 'id');
+    }
+
+    /**
+     *所有訂單
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function orders()
     {
         return $this->hasMany(Order::class, 'member_id', 'id');
