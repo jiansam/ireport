@@ -28,13 +28,11 @@ class MemberController extends AdminController
             $grid->column('account');
             $grid->column('google_id');
             $grid->column('status')->using([
-                0 => '試用期',
-                1 => '年訂閱',
-                2 => '月訂閱',
-                3 => '未訂閱',
-                4 => '未使用',
-                5 => '已購買',
-                6 => '一般免費',
+                Member::STATUS_TEST   => '試用期',
+                Member::STATUS_YEAR   => '年訂閱',
+                Member::STATUS_MONTH  => '月訂閱',
+                Member::STATUS_PAY    => '已購買',
+                Member::STATUS_FREE   => '一般免費',
             ]);
             $grid->column('point');
             $grid->column('login_time');
@@ -49,13 +47,11 @@ class MemberController extends AdminController
                 $filter->like('email', 'Email');
 
                 $filter->equal('status', '狀態')->select([
-                    0 => '試用期',
-                    1 => '年訂閱',
-                    2 => '月訂閱',
-                    3 => '未訂閱',
-                    4 => '未使用',
-                    5 => '已購買',
-                    6 => '一般免費',
+                    Member::STATUS_TEST   => '試用期',
+                    Member::STATUS_YEAR   => '年訂閱',
+                    Member::STATUS_MONTH  => '月訂閱',
+                    Member::STATUS_PAY    => '已購買',
+                    Member::STATUS_FREE   => '一般免費',
                 ]);
                 $filter->between('start_time', '開始時間')->datetime();
                 $filter->between('end_time', '結束時間')->datetime();
@@ -104,7 +100,10 @@ class MemberController extends AdminController
         return Form::make(new Member(), function (Form $form) {
             $form->display('id');
             $form->text('name')->required();
-            $form->text('phone')->required();
+            $form->text('phone')
+                ->required()
+                ->help('請輸入正確電話號碼(7~20字元,可含 +、-、空白、括號)');
+
             $form->text('email')->rules('required|email')->required();
             $form->text('address')->required();
             $form->text('carrier_num');
@@ -144,20 +143,17 @@ class MemberController extends AdminController
 
             $form->text('google_id');
             $form->select('status')->options([
-                0 => '試用期',
-                1 => '年訂閱',
-                2 => '月訂閱',
-                3 => '未訂閱',
-                4 => '未使用',
-                5 => '已購買',
-                6 => '一般免費',
-            ])->required();
+                Member::STATUS_TEST   => '試用期',
+                Member::STATUS_YEAR   => '年訂閱',
+                Member::STATUS_MONTH  => '月訂閱',
+                Member::STATUS_PAY    => '已購買',
+                Member::STATUS_FREE   => '一般免費',
+            ])->default(Member::STATUS_TEST)
+                ->required();
             $form->text('point');
             $form->datetime('login_time')->required();
             $form->datetime('start_time')->required();
             $form->datetime('end_time')->required();
-
-            // ...existing code...
         
             $form->display('created_at');
             $form->display('updated_at');

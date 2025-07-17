@@ -15,9 +15,9 @@ class Member extends BaseModel
     /**
      * 1.一般免費
      * 2.試用期
-       3.年訂閱、
-       4.月訂閱
-       5.已購買
+     *  3.年訂閱、
+     *  4.月訂閱
+     *  5.已購買
      * @var integer
      */
     public const STATUS_FREE = 1;
