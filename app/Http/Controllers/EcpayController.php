@@ -35,7 +35,7 @@ class EcpayController extends Controller
      * @param plan 方案 1|2|3
      * @param point 方案一 需帶入point點數
      * @param period 方案二、三 帶入訂閱 月或年 參數 M/Y
-      @param invoice_type 2:二聯式發票, 3:三聯式發票
+     * @param invoice_type 2:二聯式發票, 3:三聯式發票
      * @param invoice_title 買受人title
      * @param invoice_uniform_number 買受人統編
      *

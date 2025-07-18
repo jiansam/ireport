@@ -18,6 +18,7 @@ class Member extends BaseModel
      *  3.年訂閱、
      *  4.月訂閱
      *  5.已購買
+     *  6.團購會員
      * @var integer
      */
     public const STATUS_FREE = 1;
@@ -25,6 +26,7 @@ class Member extends BaseModel
     public const STATUS_YEAR = 3;
     public const STATUS_MONTH = 4;
     public const STATUS_PAY = 5;
+    public const STATUS_GROUP=6;
 
     protected $hidden = [
         'password',
