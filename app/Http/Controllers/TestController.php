@@ -1,17 +1,23 @@
 <?php
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use TsaiYiHua\ECPay\Checkout;
+use TsaiYiHua\ECPay\Invoice;
+use TsaiYiHua\ECPay\Constants\ECPayCarruerType;
+use TsaiYiHua\ECPay\Constants\ECPayDonation;
 
 class TestController extends Controller
 {
 
     protected $checkout;
+    protected $invoice;
 
-    public function __construct(Checkout $checkout)
+    public function __construct(Checkout $checkout , Invoice $invoice)
     {
         $this->checkout = $checkout;
+        $this->invoice = $invoice;
     }
 
     public function ecpay(Request $request)
@@ -29,6 +35,55 @@ class TestController extends Controller
 
         $callback = url("test/ecpay/callback");
         return $this->checkout->setReturnUrl($callback)->setPostData($formData)->send();
+    }
+
+    public function invoice(Request $request) {
+       /*
+        $itemData[] = [
+            'name' => 'product name',
+            'qty' => 1,
+            'unit' => 'piece',
+            'price' => 5000
+        ];
+        $invData = [
+            'UserId' => 1,
+            'Items' => $itemData,
+            'CustomerName' => 'User Name',
+            'CustomerEmail' => 'email@address.com',
+            'CustomerPhone' => '0912345678',
+            'OrderId' => "X123456789",
+            'Donation' => ECPayDonation::Yes,
+            'LoveCode' => 168001,
+            'Print' => 0,
+            'CarruerType' => 1
+        ];
+*/
+
+        $items = [[
+            "ItemSeq"=>1,
+            'name' => '一次性訂購',
+            'qty'  => '10',
+            'unit' => '個',
+            'price'=> '100'
+        ]];
+
+        $invData = [
+            'OrderId' => "X123456789",
+            'Items'        => $items,
+            'UserId'       => 1,
+            'CustomerName' => 'User Name',
+            'CustomerAddr' => 'ABC Road',
+            'CustomerEmail'=> 'koko0809@gmai.com',
+            "CustomerPhone"=>"0973011400",
+            'SalesAmount'   => 100,
+            "Print" => 0,
+            'CarruerType' => ECPayCarruerType::Member,
+            'Donation' => ECPayDonation::No,
+        ];
+
+        $result =  $this->invoice->setPostData($invData)->send();
+
+        dd($result);
     }
 
     public function ecpayCallback(Request $request){

@@ -24,9 +24,14 @@ Route::get('/react', function () {
 Route::get('ecpay', [EcpayController::class, "ecpay"]);
 
 /**綠界金流Callback*/
-Route::post('ecpay/callback', [EcpayController::class, "ecpayCallback"]);
+Route::post('ecpay/callback', [EcpayController::class, "callback"]);
+Route::post('ecpay/notifyInvoice', [EcpayController::class, "notifyInvoice"]);
+
+
+
 
 
 /**test*/
 Route::get('test/ecpay', [TestController::class, "ecpay"]);
+Route::get('test/invoice', [TestController::class, "invoice"]);
 Route::post('test/ecpay/callback', [TestController::class, "ecpayCallback"]);
